@@ -1,3 +1,8 @@
 # notebooks
-ipython notebooks related to Calcbench
-Examples of how to use Calcbench financial accounting data from the Calcbench API and Pandas.
+Jupyter notebook using the Calcbench API to access numeric and text data from SEC filings.
+
+Get the Calcbench API client @ https://github.com/calcbench/python_api_client
+
+Sign up for a two week trial of Calcbench @ https://www.calcbench.com/join
+
+Support - andrew@calcbench.com
