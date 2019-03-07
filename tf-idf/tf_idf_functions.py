@@ -9,6 +9,8 @@ import itertools
 from tqdm import tqdm_notebook
 from matplotlib import colors
 import matplotlib.pyplot as plt
+import numpy as np
+import pdb
 
 class NumberNormalizingVectorizer(sklearn.feature_extraction.text.TfidfVectorizer):
     def build_tokenizer(self):
@@ -68,20 +70,23 @@ def background_gradient(s, m, M, cmap='PuBu', low=0, high=0):
     rng = M - m
     norm = colors.Normalize(m - (rng * low),
                             M + (rng * high))
+
     normed = norm(s.values)
+    normed = [np.nan_to_num(n) for n in normed]
     c = [colors.rgb2hex(x) for x in plt.cm.get_cmap(cmap)(normed)]
     return ['background-color: %s' % color for color in c]
 
 def highlight_largest_diffs(diffs):
-    filled_df = diffs.loc[diffs.sum(axis=1).sort_values(ascending=False).index].fillna(0).round(3)
+    filled_df = diffs.loc[diffs.sum(axis=1).sort_values(ascending=False).index].round(3)
     return filled_df.style.apply(background_gradient, 
-        cmap='Reds', 
-        m=filled_df.min().min(), 
+        cmap='Reds',
+        m=filled_df.min().min(),
         M=filled_df.max().max(), 
-        low=0, 
+        low=0,
         high=2.5)
 
 if __name__ == "__main__":
-    tickers = ['GS']
+    tickers = ['ABCB', 'ABTX', 'ACBI', 'AGM', 'AMTD',' ANCX']    
     document_section = "CommitmentAndContingencies"
-    diffs = diffs(document_section, tickers[:5])
+    d = diffs(document_section, tickers)
+    highlight_largest_diffs(d)
