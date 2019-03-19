@@ -86,7 +86,7 @@ def highlight_largest_diffs(diffs):
         high=2.5)
 
 if __name__ == "__main__":
-    tickers = ['ABCB', 'ABTX', 'ACBI', 'AGM', 'AMTD',' ANCX']    
-    document_section = "CommitmentAndContingencies"
+    tickers = cb.tickers(index='DJIA') 
+    document_section = "AccountingPolicies"
     d = diffs(document_section, tickers)
     highlight_largest_diffs(d)
