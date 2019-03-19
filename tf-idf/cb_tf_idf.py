@@ -34,7 +34,7 @@ def pairwise(iterable):
     next(b, None)
     return zip(a, b)
 
-get_period = lambda d: (d['calendar_year'])
+get_period = lambda d: (d['fiscal_year'])
 
 def diffs(document_section, tickers):
     first_year = 2008
@@ -43,7 +43,7 @@ def diffs(document_section, tickers):
     for ticker in tqdm_notebook(tickers):
         docs = (d for d in cb.document_search(company_identifiers=[ticker], 
                                                 document_name=document_section, 
-                                                all_history=True) if d['calendar_period'] == 'Y')
+                                                all_history=True) if d['fiscal_period'] == 'Y')
         docs = sorted(docs, key=get_period)
         groups = []
         for k, g in itertools.groupby(docs, get_period):
@@ -87,6 +87,6 @@ def highlight_largest_diffs(diffs):
 
 if __name__ == "__main__":
     tickers = cb.tickers(index='DJIA') 
-    document_section = "AccountingPolicies"
+    document_section = "Business Description"
     d = diffs(document_section, tickers)
     highlight_largest_diffs(d)
