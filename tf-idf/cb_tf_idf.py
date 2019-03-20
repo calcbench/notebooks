@@ -1,6 +1,6 @@
 import calcbench as cb
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from bs4 import BeautifulSoup
 from scipy.spatial.distance import cosine
 from IPython.core.display import display, HTML
@@ -12,9 +12,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pdb
 
-class NumberNormalizingVectorizer(sklearn.feature_extraction.text.TfidfVectorizer):
+class NumberNormalizingVectorizer(TfidfVectorizer):
     def build_tokenizer(self):
         tokenize = super(NumberNormalizingVectorizer, self).build_tokenizer()
+        return lambda doc: list(number_normalizer(tokenize(doc)))
+
+class NumberNormalizingCountVectorizer(CountVectorizer):
+    def build_tokenizer(self):
+        tokenize = super(NumberNormalizingCountVectorizer, self).build_tokenizer()
         return lambda doc: list(number_normalizer(tokenize(doc)))
 
 def number_normalizer(tokens):
@@ -58,12 +63,31 @@ def diffs(document_section, tickers):
                 if not last_year_contents or not this_year_contents:
                     continue
                 text_last_year = BeautifulSoup(last_year_contents, 'html.parser').text
-                text_this_year = BeautifulSoup(this_year_contents, 'html.parser').text
-                vectorizer = NumberNormalizingVectorizer(stop_words='english')
-                X = vectorizer.fit_transform([text_this_year, text_last_year])
-                distance = cosine(X[0].todense(), X[1].todense())
+                text_this_year = BeautifulSoup(this_year_contents, 'html.parser').text                
+                distance = document_distance(text_this_year, text_last_year)
                 diffs[this_year][ticker] = distance
     return diffs
+
+vectorizer = NumberNormalizingVectorizer(stop_words='english')
+count_vectorizer = NumberNormalizingCountVectorizer(stop_words='english')
+def timestamp_diffs(document_section, tickers):
+    all_counts = pd.DataFrame()
+    for ticker in tqdm_notebook(tickers):
+        docs = cb.document_search(company_identifiers=[ticker], document_name=document_section, all_history=True)
+        docs = sorted(docs, key=lambda doc : doc.date_reported)
+        docs = [{'timestamp' : d.date_reported, 'contents' : d.get_contents_text(), 'ticker' : ticker} for d in docs]
+        docs = pd.DataFrame(data=docs).set_index(['ticker', 'timestamp'])
+        docs = pd.concat([docs, docs.shift(1).add_prefix('previous_period_')], axis=1)
+        docs = docs.assign(distance=docs[1:].apply(lambda row: document_distance(row.contents, row.previous_period_contents), axis=1))
+        docs = docs.assign(word_count=count_vectorizer.fit_transform(docs.contents).sum(axis=1))
+        docs = docs.drop(['contents', 'previous_period_contents'], axis=1)
+        all_counts = pd.concat([all_counts, docs])
+    return all_counts
+
+def document_distance(docA, docB):    
+    X = vectorizer.fit_transform([docA, docB])
+    return cosine(X[0].todense(), X[1].todense())
+
 
 def background_gradient(s, m, M, cmap='PuBu', low=0, high=0):
     # from https://stackoverflow.com/questions/38931566/pandas-style-background-gradient-both-rows-and-columns
