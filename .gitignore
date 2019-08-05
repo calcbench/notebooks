@@ -1,1 +1,4 @@
 .ipynb_checkpoints
+tf-idf/.project
+tf-idf/.pydevproject
+tf-idf/__pycache__
