@@ -2,3 +2,4 @@
 tf-idf/.project
 tf-idf/.pydevproject
 tf-idf/__pycache__
+*.csv
