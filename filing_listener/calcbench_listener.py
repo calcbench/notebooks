@@ -6,8 +6,7 @@ from pathlib import Path
 
 import calcbench as cb
 
-connection_string = "Endpoint=sb://calcbench.servicebus.windows.net/;SharedAccessKeyName=public;SharedAccessKey=Cb7VhLR6eJxsurCSPtXQHOJvlkU84CCCx2oB+T/so6Q="
-subscription_name = "not_real_subscription"
+subscription_name = "talk to Calcbench to get a subscription"
 
 log_handler = logging.StreamHandler(sys.stdout)
 calcbench_logger = logging.getLogger("calcbench")
@@ -19,7 +18,6 @@ logger.addHandler(log_handler)
 
 # cb.set_credentials("andrew@calcbench.com", "not my real password")
 
-cb.enable_backoff()
 
 output_file_name = Path.joinpath(Path.home(), "push_notification_data.csv")
 
@@ -47,10 +45,10 @@ def get_filing_standardized(filing: cb.Filing):
     )
 
 
-logger.info("Starting to handle filings")
+if __name__ == "__main__":
+    logger.info("Starting to handle filings")
 
-cb.handle_filings(
-    handler=get_filing_standardized,
-    connection_string=connection_string,
-    subscription_name=subscription_name,
-)
+    cb.handle_filings(
+        handler=get_filing_standardized,
+        subscription_name=subscription_name,
+    )
