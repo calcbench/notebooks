@@ -25,9 +25,10 @@ output_file_name = Path.joinpath(Path.home(), "push_notification_data.csv")
 
 
 def get_filing_standardized(filing: cb.Filing):
-    if not filing.get("standardized_XBRL"):
+    if not filing.standardized_XBRL:
+        # We only want filings which include XBRL Calcbench standardizes.  This excludes S-1s.
         return
-    accession_id = filing["calcbench_id"]
+    accession_id = filing.calcbench_id
     filing_data = cb.point_in_time(
         accession_id=accession_id, all_face=True, all_footnotes=True
     )
