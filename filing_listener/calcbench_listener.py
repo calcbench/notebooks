@@ -6,7 +6,7 @@ from pathlib import Path
 
 import calcbench as cb
 
-subscription_name = "talk to Calcbench to get a subscription"
+SUBSCRIPTION_NAME = "talk to Calcbench to get a subscription"
 
 log_handler = logging.StreamHandler(sys.stdout)
 calcbench_logger = logging.getLogger("calcbench")
@@ -46,15 +46,15 @@ def get_filing_standardized(filing: cb.Filing):
     filing_data = cb.point_in_time(
         accession_id=accession_id, all_face=True, all_footnotes=True
     )
-    file_exists = Path(output_file_name).exists()
+
     logger.info(f"Found {filing_data.shape} for {filing.ticker}")
     if filing_data.shape[0] == 0:
         msg = f"Found no data for {filing.ticker} {accession_id}"
         logger.exception(msg)
         # If we didn't find any data there might be something holding up the process on Calcbench's side.  Throw an exception to try again later.
         raise Exception(msg)
+    file_exists = Path(output_file_name).exists()
     filing_data[columns].to_csv(
-    filing_data.to_csv(
         output_file_name,
         index=False,
         header=not file_exists,
@@ -67,5 +67,5 @@ if __name__ == "__main__":
 
     cb.handle_filings(
         handler=get_filing_standardized,
-        subscription_name=subscription_name,
+        subscription_name=SUBSCRIPTION_NAME,
     )
