@@ -18,6 +18,22 @@ logger.addHandler(log_handler)
 
 # cb.set_credentials("andrew@calcbench.com", "not my real password")
 
+columns = [
+    "preliminary",
+    "revision_number",
+    "period_start",
+    "period_end",
+    "date_reported",
+    "metric",
+    "value",
+    "calendar_year",
+    "calendar_period",
+    "fiscal_year",
+    "fiscal_period",
+    "ticker",
+    "CIK",
+    "filing_type",
+]
 
 output_file_name = Path.joinpath(Path.home(), "push_notification_data.csv")
 
@@ -37,6 +53,7 @@ def get_filing_standardized(filing: cb.Filing):
         logger.exception(msg)
         # If we didn't find any data there might be something holding up the process on Calcbench's side.  Throw an exception to try again later.
         raise Exception(msg)
+    filing_data[columns].to_csv(
     filing_data.to_csv(
         output_file_name,
         index=False,
