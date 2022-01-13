@@ -1,12 +1,23 @@
 #!/usr/bin/env python3
 
+'''
+The `get_filing_standardized` function will get called every time a new filing is published.
+
+Calcbench pushes messages onto the queue when data is available, typically a few minutes after the SEC publishes the data.
+
+Messages will remain in the queue for seven days, if the listening process goes down you will receive the messages when it is started again.
+
+If the `handle_filing` function throws an error the message will be pushed back on the queue to re-try.
+
+'''
+
 import logging
 import sys
 from pathlib import Path
 
 import calcbench as cb
 
-SUBSCRIPTION_NAME = "talk to Calcbench to get a subscription"
+SUBSCRIPTION_NAME = "andrew_test"
 
 log_handler = logging.StreamHandler(sys.stdout)
 calcbench_logger = logging.getLogger("calcbench")
