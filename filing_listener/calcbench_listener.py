@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-'''
+"""
 The `get_filing_standardized` function will get called every time a new filing is published.
 
 Calcbench pushes messages onto the queue when data is available, typically a few minutes after the SEC publishes the data.
@@ -9,23 +9,17 @@ Messages will remain in the queue for seven days, if the listening process goes 
 
 If the `handle_filing` function throws an error the message will be pushed back on the queue to re-try.
 
-'''
+"""
 
-import logging
-import sys
+from datetime import datetime
 from pathlib import Path
 
 import calcbench as cb
 
 SUBSCRIPTION_NAME = "andrew_test"
 
-log_handler = logging.StreamHandler(sys.stdout)
-calcbench_logger = logging.getLogger("calcbench")
-calcbench_logger.setLevel(logging.INFO)
-calcbench_logger.addHandler(log_handler)
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-logger.addHandler(log_handler)
+
+logger = cb.turn_on_logging()
 
 # cb.set_credentials("andrew@calcbench.com", "not my real password")
 
@@ -44,6 +38,7 @@ columns = [
     "ticker",
     "CIK",
     "filing_type",
+    "download_time",
 ]
 
 output_file_name = Path.joinpath(Path.home(), "push_notification_data.csv")
@@ -65,6 +60,7 @@ def get_filing_standardized(filing: cb.Filing):
         # If we didn't find any data there might be something holding up the process on Calcbench's side.  Throw an exception to try again later.
         raise Exception(msg)
     file_exists = Path(output_file_name).exists()
+    filing_data["download_time"] = datetime.now()
     filing_data[columns].to_csv(
         output_file_name,
         index=False,
