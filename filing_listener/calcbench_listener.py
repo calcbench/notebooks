@@ -14,9 +14,9 @@ If the `handle_filing` function throws an error the message will be pushed back 
 from datetime import datetime
 from pathlib import Path
 
-import calcbench as cb
 
-SUBSCRIPTION_NAME = "andrew_test"
+import calcbench as cb
+from calcbench.filing import FilingType
 
 
 logger = cb.turn_on_logging()
@@ -45,20 +45,21 @@ output_file_name = Path.joinpath(Path.home(), "push_notification_data.csv")
 
 
 def get_filing_standardized(filing: cb.Filing):
-    if not filing.standardized_XBRL:
-        # We only want filings which include XBRL Calcbench standardizes.  This excludes S-1s.
+    if filing.filing_type not in {
+        FilingType.annualQuarterlyReport,
+        FilingType.eightk_earningsPressRelease,
+    }:
+        # We only want filings which include data Calcbench standardizes.
         return
-    accession_id = filing.calcbench_id
-    filing_data = cb.point_in_time(
-        accession_id=accession_id, all_face=True, all_footnotes=True
-    )
+    filing_id = filing.calcbench_id
+    filing_data = cb.point_in_time(filing_id=filing_id)
 
-    logger.info(f"Found {filing_data.shape} for {filing.ticker}")
-    if filing_data.shape[0] == 0:
-        msg = f"Found no data for {filing.ticker} {accession_id}"
+    if filing_data.empty:
+        msg = f"Found no data for {filing.ticker} {filing_id}"
         logger.exception(msg)
         # If we didn't find any data there might be something holding up the process on Calcbench's side.  Throw an exception to try again later.
         raise Exception(msg)
+    logger.info(f"Found {filing_data.shape} for {filing.ticker}")
     file_exists = Path(output_file_name).exists()
     filing_data["download_time"] = datetime.now()
     filing_data[columns].to_csv(
@@ -70,9 +71,12 @@ def get_filing_standardized(filing: cb.Filing):
 
 
 if __name__ == "__main__":
+
+    azure_service_bus_subscription = "andrew_test_2"
+    # talk to Calcbench to get a subscription
     logger.info("Starting to handle filings")
 
     cb.handle_filings(
         handler=get_filing_standardized,
-        subscription_name=SUBSCRIPTION_NAME,
+        subscription_name=azure_service_bus_subscription,
     )
