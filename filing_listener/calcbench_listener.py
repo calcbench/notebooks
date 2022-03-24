@@ -16,7 +16,6 @@ from pathlib import Path
 
 
 import calcbench as cb
-from calcbench.filing import FilingType
 
 
 logger = cb.turn_on_logging()
@@ -45,11 +44,7 @@ output_file_name = Path.joinpath(Path.home(), "push_notification_data.csv")
 
 
 def get_filing_standardized(filing: cb.Filing):
-    if filing.filing_type not in {
-        FilingType.annualQuarterlyReport,
-        FilingType.eightk_earningsPressRelease,
-    }:
-        # We only want filings which include data Calcbench standardizes.
+    if not filing.has_standardized_data:
         return
     filing_id = filing.calcbench_id
     filing_data = cb.point_in_time(filing_id=filing_id)
@@ -72,7 +67,7 @@ def get_filing_standardized(filing: cb.Filing):
 
 if __name__ == "__main__":
 
-    azure_service_bus_subscription = "andrew_test_2"
+    azure_service_bus_subscription = "not a real subscription"
     # talk to Calcbench to get a subscription
     logger.info("Starting to handle filings")
 
