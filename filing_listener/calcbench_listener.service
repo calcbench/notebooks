@@ -6,6 +6,7 @@ After=network-online.target
 Type=simple
 ExecStart=/home/andrew/calcbench_listener.py 
 Restart=always
+RuntimeMaxSec=86400
 User=andrew
 
 [Install]
