@@ -6,8 +6,8 @@ After=network-online.target
 Type=simple
 ExecStart=/home/andrew/calcbench_listener.py 
 Restart=always
-RuntimeMaxSec=86400
 User=andrew
+RuntimeMaxSec=86400
 
 [Install]
 WantedBy=multi-user.target
