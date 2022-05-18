@@ -56,7 +56,6 @@ def get_filing_standardized(filing: cb.Filing):
         raise Exception(msg)
     logger.info(f"Found {filing_data.shape} for {filing.ticker}")
     file_exists = Path(output_file_name).exists()
-    filing_data["download_time"] = datetime.now()
     filing_data[columns].to_csv(
         output_file_name,
         index=False,
