@@ -32,12 +32,11 @@ columns = [
     "value",
     "calendar_year",
     "calendar_period",
-    "fiscal_year",
     "fiscal_period",
     "ticker",
     "CIK",
     "filing_type",
-    "download_time",
+    "date_downloaded",
 ]
 
 output_file_name = Path.joinpath(Path.home(), "push_notification_data.csv")
@@ -56,7 +55,7 @@ def get_filing_standardized(filing: cb.Filing):
         raise Exception(msg)
     logger.info(f"Found {filing_data.shape} for {filing.ticker}")
     file_exists = Path(output_file_name).exists()
-    filing_data[columns].to_csv(
+    filing_data.reset_index()[columns].to_csv(
         output_file_name,
         index=False,
         header=not file_exists,
