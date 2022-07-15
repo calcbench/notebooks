@@ -45,7 +45,7 @@ output_file_name = Path.joinpath(Path.home(), "push_notification_data.csv")
 def get_filing_standardized(filing: cb.Filing):
     if not filing.has_standardized_data:
         return
-    filing_id = filing.calcbench_id
+    filing_id = filing.filing_id
     filing_data = cb.standardized(filing_id=filing_id, point_in_time=True)
 
     if filing_data.empty:
