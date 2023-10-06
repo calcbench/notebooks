@@ -11,7 +11,6 @@ If the `handle_filing` function throws an error the message will be pushed back 
 
 """
 
-from datetime import datetime
 from pathlib import Path
 
 
@@ -43,17 +42,12 @@ output_file_name = Path.joinpath(Path.home(), "push_notification_data.csv")
 
 
 def get_filing_standardized(filing: cb.Filing):
-    if not filing.has_standardized_data:
-        return
     filing_id = filing.filing_id
-    filing_data = cb.standardized(filing_id=filing_id, point_in_time=True)
+    filing_data = filing.get_standardized_data()
 
-    if filing_data.empty:
-        msg = f"Found no data for {filing.ticker} {filing_id}"
-        logger.exception(msg)
-        # If we didn't find any data there might be something holding up the process on Calcbench's side.  Throw an exception to try again later.
-        raise Exception(msg)
     logger.info(f"Found {filing_data.shape} for {filing.ticker}")
+    if filing_data.empty:
+        return
     file_exists = Path(output_file_name).exists()
     filing_data.reset_index()[columns].to_csv(
         output_file_name,
