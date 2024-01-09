@@ -42,7 +42,6 @@ output_file_name = Path.joinpath(Path.home(), "push_notification_data.csv")
 
 
 def get_filing_standardized(filing: cb.Filing):
-    filing_id = filing.filing_id
     filing_data = filing.get_standardized_data()
 
     logger.info(f"Found {filing_data.shape} for {filing.ticker}")
@@ -58,7 +57,6 @@ def get_filing_standardized(filing: cb.Filing):
 
 
 if __name__ == "__main__":
-
     azure_service_bus_subscription = "not a real subscription"
     # talk to Calcbench to get a subscription
     logger.info("Starting to handle filings")
