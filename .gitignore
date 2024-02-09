@@ -6,3 +6,4 @@ tf-idf/__pycache__
 *.xlsx
 *.pkl
 *.pdf
+settings.json
