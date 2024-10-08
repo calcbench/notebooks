@@ -5,4 +5,4 @@ Get the Calcbench API Python client @ https://github.com/calcbench/python_api_cl
 
 Sign up for a two week trial of Calcbench @ https://www.calcbench.com/join
 
-Support - andrew@calcbench.com
+Support - support@calcbench.com
