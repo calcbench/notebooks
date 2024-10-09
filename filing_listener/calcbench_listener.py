@@ -9,6 +9,8 @@ Messages will remain in the queue for seven days, if the listening process goes 
 
 If the `handle_filing` function throws an error the message will be pushed back on the queue to re-try.
 
+`pip install calcbench-api-client[Listener]` to install the service bus dependencies.
+
 """
 
 from pathlib import Path
@@ -57,7 +59,7 @@ def get_filing_standardized(filing: cb.Filing):
 
 
 if __name__ == "__main__":
-    azure_service_bus_subscription = "not a real subscription"
+    azure_service_bus_subscription = "andrew_test"
     # talk to Calcbench to get a subscription
     logger.info("Starting to handle filings")
 
